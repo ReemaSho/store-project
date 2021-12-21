@@ -1,4 +1,5 @@
 import express from "express";
+import error_async_handler from "express-async-errors";
 import productsRouter from "./routes/products.js";
 import connectDB from "./db/connect.js";
 import { config } from "dotenv";
