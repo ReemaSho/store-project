@@ -1,7 +1,7 @@
 import Product from "../models/products.js";
 
 const getAllProducts = async(req, res) => {
-    const { featured, company, name } = req.query;
+    const { featured, company, name, sort, fields } = req.query;
     //I set queryOption equal to an empty string , incase the queryString doesn't exist in my data , fun will search for an empty object and return all products
     const queryOptions = {};
 
@@ -15,7 +15,19 @@ const getAllProducts = async(req, res) => {
         //{ $regex} mongoDB query operators docs
         queryOptions.name = { $regex: name, $options: "i" };
     }
-    const products = await Product.find(queryOptions);
+    let result = Product.find(queryOptions);
+    //add global queries:
+    // sort
+    if (sort) {
+        const sortList = sort.split(",").join(" ");
+        result = result.sort(sortList);
+    }
+    //select
+    if (fields) {
+        const fieldsList = fields.split(",").join(" ");
+        result = result.select(fieldsList);
+    }
+    const products = await result;
     res.status(200).json({ products, nHits: products.length });
 };
 
